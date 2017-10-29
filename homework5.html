@@ -1,0 +1,93 @@
+<style>
+  #canvas{
+    border: solid red 3px;
+  }
+</style>
+<canvas id="canvas" height="500" width="800"></canvas>
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+  
+  
+  const rand = function(num) {
+    return Math.floor(Math.random() * num) + 1;
+  };
+  
+  const colors= ['blue','red','green', 'orange','pink', 'yellow', 'aqua', 'violet'];
+  
+  const createPoint = function(count, canvasWidth, canvasHeight) {
+    const allPoints = [];
+    const points = function(n) {
+      if (n <= 0) {
+        return;
+      }
+      allPoints.push({
+        x: rand(canvasWidth - 100),
+        y: rand(canvasHeight - 100),
+        width: 100,
+        height: 100,
+        xDelta: 5,
+        yDelta: 4,
+        color: colors[rand(8)-1]
+      });
+      points(n-1);
+    }
+    points(count);
+    return allPoints;
+  };
+  
+  const pointsTotal = createPoint(3, canvas.width, canvas.height);	
+  
+  
+  const draw = function() {
+    ctx.clearRect(0,0, canvas.width, canvas.height);
+    const drawAll = function(array, t) {
+      if(t === array.length) {
+        return;
+      };
+      
+      ctx.fillStyle = array[t].color;
+      ctx.fillRect(array[t].x, array[t].y, array[t].width, array[t].height);
+      drawAll(array, t+1);
+    };
+    drawAll(pointsTotal, 0);
+  };
+  
+const updateData = function() {
+    const updateAll = function(array, t){
+      if(t === array.length) {
+        return;
+      }
+      
+      if(array[t].x >= canvas.width-array[t].width){
+        array[t].xDelta = -array[t].xDelta;
+      }else if(array[t].x <=0){
+        array[t].xDelta = -array[t].xDelta;
+      }
+      
+      if(array[t].y >= canvas.height-array[t].height){
+        array[t].yDelta = -array[t].yDelta;
+      }else if(array[t].y<=0){
+        array[t].yDelta = -array[t].yDelta;
+      }
+
+      array[t].x = array[t].x + array[t].xDelta;
+      array[t].y = array[t].y + array[t].yDelta;
+      
+      updateAll(array, t+1);
+    };
+    updateAll(pointsTotal, 0);
+  };
+  
+  const loop = function(){
+    
+    draw();
+    updateData();
+
+    requestAnimationFrame(loop);
+  };
+  
+  loop();
+
+</script>
+

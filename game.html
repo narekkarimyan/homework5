@@ -1,0 +1,140 @@
+
+<canvas id='canvas' width="1000" height="600"></canvas>
+<script>
+	const canvas = document.getElementById('canvas');
+	const ctx = canvas.getContext('2d');
+    
+	const ground = 350;
+	const max = ground - 250;
+	const leftKey = 37;
+    const upKey = 38;
+    const rightKey = 39;
+    
+	const image = new Image();
+	image.src = "background.jpg";
+
+	const heroR = new Image();
+	heroR.src = "heroRight.png";
+
+	const heroL = new Image();
+	heroL.src = "heroLeft.png";	
+
+	const enemyR = new Image();
+	enemyR.src = "enemyR.png";
+
+	const enemyL = new Image();
+	enemyL.src = "enemyL.png";		
+
+	const gameData = {
+		herO: {
+			img: heroR,
+			x: 500,
+		    y: ground,
+		    width: 140,
+		    height: 170,
+		    xDelta: 18,
+		    yDelta: 0,
+		},
+        enemy: {
+			img: enemyR,
+			x: 10,
+		    y: ground,
+		    width: 100,
+		    height: 170,
+		    xDelta: 3,
+		}
+	}
+
+	const hero = gameData.herO;
+	const enemy = gameData.enemy;
+
+
+	const draw = function(){
+        //background
+		ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+		//hero
+		ctx.drawImage(hero.img, hero.x, hero.y, hero.width, hero.height);
+		//enemy
+		ctx.drawImage(enemy.img, enemy.x, enemy.y, enemy.width, enemy.height);
+	}
+
+	const updateData = function(){
+		//JUMP
+		if(hero.yDelta !== 0){
+			hero.y = hero.y - hero.yDelta;
+			if(hero.y <= max){
+                hero.yDelta = (hero.yDelta * -1);
+		    }else if (hero.y >= ground){
+		    	hero.yDelta = 0;
+		    }
+		}
+		//enemy
+		enemy.x = enemy.x + enemy.xDelta;	
+		if(enemy.x >= canvas.width-enemy.width){
+			enemy.img = enemyL;
+			enemy.xDelta = enemy.xDelta * -1;
+		}else if(enemy.x <= 0){
+			enemy.img = enemyR;
+			enemy.xDelta = enemy.xDelta * -1;
+		}
+        if(enemy.img === enemyR){
+        	if(((enemy.x+enemy.width-40 >= hero.x) && (enemy.x+enemy.width-40 <= hero.x + hero.width)) 
+        		&& (enemy.y <= (hero.y + hero.height-20))){
+       		   hero.xDelta = 0;
+       		   hero.yDelta = 0;
+       		   enemy.xDelta = 0;
+       		   alert("You Lost");
+            }
+        }else if(enemy.img === enemyL){
+        	if(((enemy.x <= hero.x + hero.width-40) && (enemy.x >= hero.x)) 
+        		&& (enemy.y <= (hero.y + hero.height-20))){
+        		hero.xDelta = 0;
+       		    hero.yDelta = 0;
+       		    enemy.xDelta = 0;
+       		    alert("You Lost");
+            }
+        }
+}	
+
+
+	const loop = function(){
+		draw();
+		updateData();
+
+		requestAnimationFrame(loop);
+	}
+
+	loop();
+
+	document.addEventListener('keydown', function(event) {
+	    if(event.keyCode === rightKey) {
+	    	hero.img = heroR;
+            hero.x = hero.x + hero.xDelta;
+            if(hero.x >= canvas.width-hero.width){
+            	hero.x=0;
+            }
+  	    }else if(event.keyCode === leftKey){
+  	    	hero.img = heroL;
+  	    	hero.x = hero.x - hero.xDelta;
+  	    	if(hero.x <= 0){
+  	    		hero.x=canvas.width-hero.width;
+  	    	}
+  	    }else if(event.keyCode === upKey){
+  	    	if(hero.yDelta === 0){
+  	    		hero.yDelta = 5;
+  	    	}
+  	    }
+    }, false);
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
